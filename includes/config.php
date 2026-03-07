@@ -1,0 +1,11 @@
+<?php
+// Database configuration
+define('DB_SERVER', 'localhost');
+define('DB_USERNAME', 'root');
+define('DB_PASSWORD', '');
+define('DB_NAME', 'kkk_vibrant');
+
+// Site settings
+define('SITE_NAME', 'VibrantShop');
+define('SITE_URL', 'http://localhost/kkk');
+?>
