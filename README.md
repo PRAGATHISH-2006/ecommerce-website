@@ -73,23 +73,6 @@ Open your browser and navigate to:
 | **User** | `john_doe` | `password123` |
 
 ---
-
-## 🖼️ Screenshots
-
-<div align="center">
-  <p><i>Home Page Preview</i></p>
-  <img src="https://img.freepik.com/free-vector/flat-design-shopping-online-landing-page-template_23-2148530368.jpg?w=800" width="80%"/>
-</div>
-
----
-
-## 🤝 Contributing
-Feel free to fork this project and contribute by submitting pull requests. For major changes, please open an issue first to discuss what you would like to change.
-
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
 <div align="center">
   Made with ❤️ for a better shopping experience.
 </div>
