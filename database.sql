@@ -1,7 +1,4 @@
-DROP DATABASE IF EXISTS kkk_vibrant;
-CREATE DATABASE kkk_vibrant;
-USE kkk_vibrant;
-
+-- Database creation statements removed for compatibility with shared hosting.
 -- Clean start (fixes #1932 errors)
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
