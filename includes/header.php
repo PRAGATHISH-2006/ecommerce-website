@@ -36,9 +36,27 @@ require_once __DIR__ . '/config.php';
                     <a class="nav-link" href="<?php echo SITE_URL; ?>/products/index.php">Shop</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo SITE_URL; ?>/cart.php">
-                        <i class="bi bi-cart3 fs-5"></i>
-                        <span class="badge rounded-pill bg-danger" id="cart-count">0</span>
+                    <a class="nav-link" href="<?php echo SITE_URL; ?>/wishlist/index.php">
+                        <i class="bi bi-heart me-1"></i> Wishlist
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo SITE_URL; ?>/cart/index.php">
+                        <i class="bi bi-cart3 me-1"></i> Cart
+                        <?php 
+                        $cart_count = 0;
+                        if(isset($_SESSION['user_id'])) {
+                            $uid = $_SESSION['user_id'];
+                            $c_res = mysqli_query($conn, "SELECT SUM(quantity) as cnt FROM cart_items WHERE user_id=$uid");
+                            if($c_row = mysqli_fetch_assoc($c_res)) $cart_count = $c_row['cnt'] ?? 0;
+                        } else {
+                            if(isset($_SESSION['cart'])) {
+                                foreach($_SESSION['cart'] as $item) $cart_count += $item['qty'];
+                            }
+                        }
+                        if($cart_count > 0): ?>
+                            <span class="badge bg-primary rounded-pill"><?php echo $cart_count; ?></span>
+                        <?php endif; ?>
                     </a>
                 </li>
                 <?php if(isset($_SESSION['user_id'])): ?>

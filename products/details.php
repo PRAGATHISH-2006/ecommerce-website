@@ -142,7 +142,7 @@ if(empty($images)) $images[] = SITE_URL . '/assets/images/default.jpg';
                         </button>
                     </div>
                     <div class="col-md-6">
-                        <button class="btn btn-outline-danger btn-lg w-100 py-3 shadow">
+                        <button onclick="addCurrentToWishlist()" class="btn btn-outline-danger btn-lg w-100 py-3 shadow">
                             <i class="bi bi-heart me-2"></i> Add to Wishlist
                         </button>
                     </div>
@@ -205,14 +205,57 @@ function updateVariantDetails() {
 function addCurrentToCart() {
     const qty = document.getElementById('qty').value;
     const sel = document.getElementById('variantSelect');
-    let variant_id = 0;
+    let variant_id = '';
     if(sel && sel.value !== "") {
         variant_id = sel.value;
     }
     
-    // Call the original addToCart logic, adapted to support variants in Phase 4
-    console.log("Adding product <?php echo $prod['id']; ?> to cart. Qty: " + qty + ", Variant: " + variant_id);
-    alert("Added to cart! (Cart functionality update in Phase 4)");
+    let bodyData = 'product_id=<?php echo $prod['id']; ?>&qty=' + qty;
+    if(variant_id !== '') bodyData += '&variant_id=' + variant_id;
+    
+    fetch('../cart/add.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: bodyData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            alert("Added to cart!");
+            // Optionally update cart icon count here
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function addCurrentToWishlist() {
+    const sel = document.getElementById('variantSelect');
+    let variant_id = '';
+    if(sel && sel.value !== "") {
+        variant_id = sel.value;
+    }
+    
+    let bodyData = 'product_id=<?php echo $prod['id']; ?>';
+    if(variant_id !== '') bodyData += '&variant_id=' + variant_id;
+    
+    fetch('../wishlist/add.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: bodyData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            alert(data.message);
+        } else {
+            if(data.message.includes('login')) {
+                window.location.href = '../auth/login.php';
+            } else {
+                alert(data.message);
+            }
+        }
+    });
 }
 </script>
 
