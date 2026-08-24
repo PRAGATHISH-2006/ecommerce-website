@@ -71,7 +71,7 @@ $result = mysqli_query($conn, $query);
                     <i class="bi bi-box-seam display-1 text-muted mb-4 d-block"></i>
                     <h3>No orders yet!</h3>
                     <p class="text-muted mb-4">You haven't placed any orders yet. Start shopping to see your history here.</p>
-                    <a href="products.php" class="btn btn-custom btn-lg">Browse Shop</a>
+                    <a href="products/index.php" class="btn btn-custom btn-lg">Browse Shop</a>
                 </div>
             <?php endif; ?>
         </div>

@@ -33,7 +33,7 @@ require_once __DIR__ . '/config.php';
                     <a class="nav-link" href="<?php echo SITE_URL; ?>/index.php">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo SITE_URL; ?>/products.php">Shop</a>
+                    <a class="nav-link" href="<?php echo SITE_URL; ?>/products/index.php">Shop</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo SITE_URL; ?>/cart.php">

@@ -11,35 +11,38 @@ require_once 'includes/header.php';
                 <h1>Discover the Future of <span style="color: #ffde59;">Shopping</span></h1>
                 <p class="lead mb-4">Explore our curated collection of premium gadgets and stylish fashion. Experience luxury like never before.</p>
                 <div class="d-flex gap-3">
-                    <a href="products.php" class="btn btn-light btn-lg px-4 fw-bold shadow">Shop Now</a>
-                    <a href="#featured" class="btn btn-outline-light btn-lg px-4 fw-bold">View Deals</a>
+                    <a href="products/index.php" class="btn btn-light btn-lg px-4 fw-bold shadow">Shop Now</a>
                 </div>
             </div>
-            <div class="col-lg-6 d-none d-lg-block">
-                <img src="https://img.freepik.com/free-vector/shopping-online-concept-illustration_114360-1141.jpg" alt="Hero Image" class="img-fluid rounded-4 shadow-lg animate__animated animate__zoomIn">
+            <div class="col-md-6 d-none d-md-block">
+                <img src="https://via.placeholder.com/600x400" alt="Hero Image" class="img-fluid rounded-4 shadow">
             </div>
         </div>
     </div>
-</section>
+</div>
 
 <!-- Categories Section -->
-<section class="container mb-5 py-5">
-    <div class="text-center mb-5">
-        <h2 class="display-5 fw-bold">Explore Categories</h2>
-        <div class="mx-auto bg-primary" style="height: 4px; width: 60px; border-radius: 2px;"></div>
+<section class="container py-5 mt-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Shop by Category</h2>
+            <p class="text-muted">Find exactly what you're looking for</p>
+        </div>
     </div>
-    <div class="row text-center g-4">
+    <div class="row g-4">
         <?php
         $cat_query = "SELECT * FROM categories LIMIT 4";
         $cat_result = mysqli_query($conn, $cat_query);
         while($cat = mysqli_fetch_assoc($cat_result)):
         ?>
-        <div class="col-6 col-md-3">
-            <a href="products.php?category=<?php echo $cat['id']; ?>" class="text-decoration-none text-dark category-item">
-                <div class="category-icon text-primary">
-                    <i class="bi <?php echo $cat['icon']; ?>"></i>
+        <div class="col-md-3 col-6">
+            <a href="products/index.php?category=<?php echo $cat['id']; ?>" class="text-decoration-none text-dark category-item">
+                <div class="card border-0 shadow-sm text-center p-4 h-100" style="border-radius: 20px;">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="bi <?php echo $cat['icon']; ?>"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0"><?php echo $cat['name']; ?></h5>
                 </div>
-                <h5 class="fw-bold"><?php echo $cat['name']; ?></h5>
             </a>
         </div>
         <?php endwhile; ?>
@@ -47,13 +50,13 @@ require_once 'includes/header.php';
 </section>
 
 <!-- Featured Products Section -->
-<section id="featured" class="container mb-5 py-5">
+<section class="container py-5 mt-5 bg-light rounded-4 px-4 px-md-5">
     <div class="d-flex justify-content-between align-items-end mb-5">
         <div>
-            <h2 class="display-5 fw-bold">Featured Products</h2>
-            <p class="text-muted">Handpicked selection just for you</p>
+            <h2 class="fw-bold mb-0">Trending Now</h2>
+            <p class="text-muted">Our most popular products this week</p>
         </div>
-        <a href="products.php" class="text-decoration-none fw-bold text-primary">View All <i class="bi bi-arrow-right"></i></a>
+        <a href="products/index.php" class="text-decoration-none fw-bold text-primary">View All <i class="bi bi-arrow-right"></i></a>
     </div>
     <div class="row g-4">
         <?php

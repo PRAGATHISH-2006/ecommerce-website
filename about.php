@@ -18,7 +18,7 @@ require_once 'includes/header.php';
             <h2 class="display-5 fw-bold mb-4">Our Story</h2>
             <p class="text-muted lead">Founded in 2026, VibrantShop started as a small dream to revolutionize online shopping. We believe that premium gadgets and stylish fashion should be accessible to everyone, everywhere.</p>
             <p class="text-muted mb-4">Over the years, we've partnered with top-tier manufacturers to bring you curated collections that you won't find anywhere else. Our commitment to quality, affordability, and exceptional customer service has made us a leader in the e-commerce space.</p>
-            <a href="products.php" class="btn btn-custom btn-lg">Explore Our Products</a>
+            <a href="products/index.php" class="btn btn-custom btn-lg">Explore Our Products</a>
         </div>
         <div class="col-lg-6">
             <img src="https://img.freepik.com/free-vector/teamwork-concept-landing-page_52683-20165.jpg" alt="Our Story" class="img-fluid rounded-4 shadow-lg">

@@ -34,7 +34,7 @@ if(!empty($cart_items)) {
             </div>
             <h3>Your cart is empty!</h3>
             <p class="text-muted mb-4">Looks like you haven't added anything to your cart yet.</p>
-            <a href="products.php" class="btn btn-custom btn-lg">Start Shopping</a>
+            <a href="products/index.php" class="btn btn-custom btn-lg">Start Shopping</a>
         </div>
     <?php else: ?>
         <div class="row g-4">
@@ -68,7 +68,7 @@ if(!empty($cart_items)) {
                         </div>
                     <?php endforeach; ?>
                     <div class="d-flex justify-content-between mt-3">
-                        <a href="products.php" class="text-decoration-none fw-bold"><i class="bi bi-arrow-left me-2"></i> Continue Shopping</a>
+                        <a href="products/index.php" class="text-decoration-none fw-bold"><i class="bi bi-arrow-left me-2"></i> Continue Shopping</a>
                         <button onclick="clearCart()" class="btn btn-outline-danger btn-sm border-0">Clear Cart</button>
                     </div>
                 </div>
