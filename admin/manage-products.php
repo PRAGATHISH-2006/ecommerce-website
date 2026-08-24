@@ -3,7 +3,7 @@ require_once '../includes/db_connect.php';
 session_start();
 
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("location: ../login.php");
+    header("location: ../auth/login.php");
     exit;
 }
 
@@ -25,16 +25,21 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_product'])) {
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $desc = mysqli_real_escape_string($conn, $_POST['description']);
     $price = (float)$_POST['price'];
+    $discount_price = isset($_POST['discount_price']) && $_POST['discount_price'] !== '' ? (float)$_POST['discount_price'] : 'NULL';
     $stock = (int)$_POST['stock'];
     $cat_id = (int)$_POST['category_id'];
+    $brand = mysqli_real_escape_string($conn, $_POST['brand']);
+    $sku = mysqli_real_escape_string($conn, $_POST['sku']);
+    $status = mysqli_real_escape_string($conn, $_POST['status']);
+    $specifications = mysqli_real_escape_string($conn, $_POST['specifications']);
     
     if(isset($_POST['product_id']) && !empty($_POST['product_id'])) {
         // Update
         $id = (int)$_POST['product_id'];
-        $sql = "UPDATE products SET name='$name', description='$desc', price='$price', stock='$stock', category_id='$cat_id' WHERE id=$id";
+        $sql = "UPDATE products SET name='$name', description='$desc', price=$price, discount_price=$discount_price, stock=$stock, category_id=$cat_id, brand='$brand', sku='$sku', status='$status', specifications='$specifications' WHERE id=$id";
     } else {
         // Insert
-        $sql = "INSERT INTO products (name, description, price, stock, category_id, image) VALUES ('$name', '$desc', '$price', '$stock', '$cat_id', 'assets/images/default.jpg')";
+        $sql = "INSERT INTO products (name, description, price, discount_price, stock, category_id, brand, sku, status, specifications, image) VALUES ('$name', '$desc', $price, $discount_price, $stock, $cat_id, '$brand', '$sku', '$status', '$specifications', 'assets/images/default.jpg')";
     }
     
     if(mysqli_query($conn, $sql)) {
@@ -78,7 +83,7 @@ $categories = mysqli_query($conn, "SELECT * FROM categories");
         <a class="nav-link" href="manage-users.php"><i class="bi bi-people me-3"></i> Manage Users</a>
         <hr class="my-4 text-secondary">
         <a class="nav-link" href="../index.php"><i class="bi bi-house me-3"></i> Back to Site</a>
-        <a class="nav-link text-danger" href="../logout.php"><i class="bi bi-box-arrow-right me-3"></i> Logout</a>
+        <a class="nav-link text-danger" href="../auth/logout.php"><i class="bi bi-box-arrow-right me-3"></i> Logout</a>
     </nav>
 </div>
 
@@ -107,9 +112,11 @@ $categories = mysqli_query($conn, "SELECT * FROM categories");
                     <tr>
                         <th class="ps-4">ID</th>
                         <th>Product</th>
+                        <th>SKU</th>
                         <th>Category</th>
                         <th>Price</th>
                         <th>Stock</th>
+                        <th>Status</th>
                         <th class="pe-4 text-end">Actions</th>
                     </tr>
                 </thead>
@@ -119,20 +126,26 @@ $categories = mysqli_query($conn, "SELECT * FROM categories");
                         <td class="ps-4 text-muted">#<?php echo $prod['id']; ?></td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <img src="https://via.placeholder.com/40x40" class="rounded me-3">
-                                <div class="fw-bold"><?php echo $prod['name']; ?></div>
+                                <img src="../<?php echo empty($prod['image']) ? 'assets/images/default.jpg' : $prod['image']; ?>" class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                                <div class="fw-bold"><?php echo htmlspecialchars($prod['name']); ?></div>
                             </div>
                         </td>
-                        <td><span class="badge bg-light text-dark"><?php echo $prod['cat_name']; ?></span></td>
+                        <td class="text-muted"><?php echo htmlspecialchars($prod['sku'] ?? 'N/A'); ?></td>
+                        <td><span class="badge bg-light text-dark"><?php echo htmlspecialchars($prod['cat_name']); ?></span></td>
                         <td class="fw-bold text-primary">$<?php echo number_format($prod['price'], 2); ?></td>
                         <td>
-                            <span class="<?php echo $prod['stock'] < 10 ? 'text-danger' : ''; ?>">
-                                <?php echo $prod['stock']; ?> units
+                            <span class="<?php echo $prod['stock'] < 10 ? 'text-danger fw-bold' : ''; ?>">
+                                <?php echo $prod['stock']; ?>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge <?php echo $prod['status'] == 'active' ? 'bg-success' : 'bg-secondary'; ?>">
+                                <?php echo ucfirst($prod['status']); ?>
                             </span>
                         </td>
                         <td class="pe-4 text-end">
-                            <button class="btn btn-light btn-sm rounded-pill me-2" onclick='editProduct(<?php echo json_encode($prod); ?>)'><i class="bi bi-pencil"></i></button>
-                            <a href="?delete=<?php echo $prod['id']; ?>" class="btn btn-light btn-sm rounded-pill text-danger" onclick="return confirm('Are you sure?')"><i class="bi bi-trash"></i></a>
+                            <button class="btn btn-light btn-sm rounded-pill me-1" onclick='editProduct(<?php echo json_encode($prod); ?>)' title="Edit"><i class="bi bi-pencil"></i></button>
+                            <a href="?delete=<?php echo $prod['id']; ?>" class="btn btn-light btn-sm rounded-pill text-danger" onclick="return confirm('Are you sure?')" title="Delete"><i class="bi bi-trash"></i></a>
                         </td>
                     </tr>
                     <?php endwhile; ?>
@@ -144,43 +157,92 @@ $categories = mysqli_query($conn, "SELECT * FROM categories");
 
 <!-- Add/Edit Product Modal -->
 <div class="modal fade" id="addProductModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content border-0" style="border-radius: 24px;">
-            <div class="modal-header border-0 p-4">
+            <div class="modal-header border-0 p-4 pb-0">
                 <h5 class="modal-title fw-bold" id="modalTitle">Add New Product</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form action="manage-products.php" method="POST" id="productForm">
                     <input type="hidden" name="product_id" id="prod_id">
-                    <div class="row g-3">
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label fw-bold small text-uppercase">Product Name</label>
-                            <input type="text" name="name" id="prod_name" class="form-control bg-light border-0 py-3" required>
+                    
+                    <div class="row g-4">
+                        <!-- Left Column: Basic Info -->
+                        <div class="col-lg-8">
+                            <div class="card border-0 bg-light p-4 rounded-4 h-100">
+                                <h6 class="fw-bold mb-3">Basic Information</h6>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Product Name*</label>
+                                        <input type="text" name="name" id="prod_name" class="form-control border-0 py-2" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Description</label>
+                                        <textarea name="description" id="prod_desc" class="form-control border-0 py-2" rows="4"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Specifications (One per line)</label>
+                                        <textarea name="specifications" id="prod_specs" class="form-control border-0 py-2" rows="4"></textarea>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold small text-uppercase">Category</label>
-                            <select name="category_id" id="prod_cat" class="form-select bg-light border-0 py-3" required>
-                                <?php mysqli_data_seek($categories, 0); while($cat = mysqli_fetch_assoc($categories)): ?>
-                                    <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-bold small text-uppercase">Price ($)</label>
-                            <input type="number" step="0.01" name="price" id="prod_price" class="form-control bg-light border-0 py-3" required>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-bold small text-uppercase">Stock</label>
-                            <input type="number" name="stock" id="prod_stock" class="form-control bg-light border-0 py-3" required>
-                        </div>
-                        <div class="col-12 mb-4">
-                            <label class="form-label fw-bold small text-uppercase">Description</label>
-                            <textarea name="description" id="prod_desc" class="form-control bg-light border-0 py-3" rows="4"></textarea>
+
+                        <!-- Right Column: Pricing & Organization -->
+                        <div class="col-lg-4">
+                            <div class="card border-0 bg-light p-4 rounded-4 mb-4">
+                                <h6 class="fw-bold mb-3">Pricing & Inventory</h6>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label class="form-label small text-muted">Price ($)*</label>
+                                        <input type="number" step="0.01" name="price" id="prod_price" class="form-control border-0 py-2" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small text-muted">Discount ($)</label>
+                                        <input type="number" step="0.01" name="discount_price" id="prod_discount" class="form-control border-0 py-2">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Stock Quantity*</label>
+                                        <input type="number" name="stock" id="prod_stock" class="form-control border-0 py-2" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card border-0 bg-light p-4 rounded-4">
+                                <h6 class="fw-bold mb-3">Organization</h6>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Category*</label>
+                                        <select name="category_id" id="prod_cat" class="form-select border-0 py-2" required>
+                                            <?php mysqli_data_seek($categories, 0); while($cat = mysqli_fetch_assoc($categories)): ?>
+                                                <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></option>
+                                            <?php endwhile; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Brand</label>
+                                        <input type="text" name="brand" id="prod_brand" class="form-control border-0 py-2">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">SKU</label>
+                                        <input type="text" name="sku" id="prod_sku" class="form-control border-0 py-2">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Status</label>
+                                        <select name="status" id="prod_status" class="form-select border-0 py-2">
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="d-grid">
-                        <button type="submit" name="save_product" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-sm">Save Product</button>
+                    
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-light px-4 me-2" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" name="save_product" class="btn btn-primary px-5 rounded-pill fw-bold shadow-sm">Save Product</button>
                     </div>
                 </form>
             </div>
@@ -196,8 +258,13 @@ function editProduct(prod) {
     document.getElementById('prod_name').value = prod.name;
     document.getElementById('prod_cat').value = prod.category_id;
     document.getElementById('prod_price').value = prod.price;
+    document.getElementById('prod_discount').value = prod.discount_price || '';
     document.getElementById('prod_stock').value = prod.stock;
-    document.getElementById('prod_desc').value = prod.description;
+    document.getElementById('prod_desc').value = prod.description || '';
+    document.getElementById('prod_brand').value = prod.brand || '';
+    document.getElementById('prod_sku').value = prod.sku || '';
+    document.getElementById('prod_status').value = prod.status;
+    document.getElementById('prod_specs').value = prod.specifications || '';
     
     var modal = new bootstrap.Modal(document.getElementById('addProductModal'));
     modal.show();

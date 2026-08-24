@@ -14,11 +14,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_category'])) {
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $icon = mysqli_real_escape_string($conn, $_POST['icon']);
     
+    $status = isset($_POST['status']) ? mysqli_real_escape_string($conn, $_POST['status']) : 'active';
+    
     if(isset($_POST['category_id']) && !empty($_POST['category_id'])) {
         $id = (int)$_POST['category_id'];
-        $sql = "UPDATE categories SET name='$name', icon='$icon' WHERE id=$id";
+        $sql = "UPDATE categories SET name='$name', icon='$icon', status='$status' WHERE id=$id";
     } else {
-        $sql = "INSERT INTO categories (name, icon) VALUES ('$name', '$icon')";
+        $sql = "INSERT INTO categories (name, icon, status) VALUES ('$name', '$icon', '$status')";
     }
     
     if(mysqli_query($conn, $sql)) {
@@ -82,6 +84,7 @@ $categories = mysqli_query($conn, "SELECT * FROM categories");
                             <th class="ps-4">ID</th>
                             <th>Icon</th>
                             <th>Category Name</th>
+                            <th>Status</th>
                             <th class="pe-4 text-end">Action</th>
                         </tr>
                     </thead>
@@ -90,7 +93,12 @@ $categories = mysqli_query($conn, "SELECT * FROM categories");
                         <tr>
                             <td class="ps-4">#<?php echo $cat['id']; ?></td>
                             <td><i class="bi <?php echo $cat['icon']; ?> fs-4 text-primary"></i></td>
-                            <td class="fw-bold"><?php echo $cat['name']; ?></td>
+                            <td class="fw-bold"><?php echo htmlspecialchars($cat['name']); ?></td>
+                            <td>
+                                <span class="badge <?php echo $cat['status'] == 'active' ? 'bg-success' : 'bg-secondary'; ?>">
+                                    <?php echo ucfirst($cat['status']); ?>
+                                </span>
+                            </td>
                             <td class="pe-4 text-end">
                                 <button class="btn btn-light btn-sm rounded-pill" onclick='editCategory(<?php echo json_encode($cat); ?>)'><i class="bi bi-pencil"></i></button>
                             </td>
@@ -122,6 +130,13 @@ $categories = mysqli_query($conn, "SELECT * FROM categories");
                         <label class="form-label fw-bold small text-uppercase">Bootstrap Icon Class</label>
                         <input type="text" name="icon" id="cat_icon" class="form-control bg-light border-0 py-3" placeholder="e.g. bi-laptop" required>
                     </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase">Status</label>
+                        <select name="status" id="cat_status" class="form-select bg-light border-0 py-3">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
                     <div class="d-grid">
                         <button type="submit" name="save_category" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold">Save Category</button>
                     </div>
@@ -138,6 +153,7 @@ function editCategory(cat) {
     document.getElementById('cat_id').value = cat.id;
     document.getElementById('cat_name').value = cat.name;
     document.getElementById('cat_icon').value = cat.icon;
+    document.getElementById('cat_status').value = cat.status;
     var modal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
     modal.show();
 }
