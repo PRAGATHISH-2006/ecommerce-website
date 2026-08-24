@@ -1,10 +1,10 @@
 <?php
-require_once 'includes/db_connect.php';
+require_once '../includes/db_connect.php';
 
 // Check if user is already logged in
 session_start();
 if(isset($_SESSION["user_id"])){
-    header("location: index.php");
+    header("location: ../index.php");
     exit;
 }
 
@@ -43,7 +43,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             $_SESSION["username"] = $username;
                             $_SESSION["role"] = $role;                            
                             
-                            header("location: index.php");
+                            header("location: ../index.php");
                         } else{
                             $login_err = "Invalid username or password.";
                         }
@@ -58,7 +58,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
 }
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="container py-5">
@@ -102,4 +102,4 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

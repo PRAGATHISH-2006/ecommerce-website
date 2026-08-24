@@ -52,12 +52,12 @@ require_once __DIR__ . '/config.php';
                                 <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/admin/dashboard.php">Admin Panel</a></li>
                             <?php endif; ?>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/logout.php">Logout</a></li>
+                            <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/auth/logout.php">Logout</a></li>
                         </ul>
                     </li>
                 <?php else: ?>
                     <li class="nav-item ms-lg-3">
-                        <a class="btn btn-custom" href="<?php echo SITE_URL; ?>/login.php">Login</a>
+                        <a class="btn btn-custom" href="<?php echo SITE_URL; ?>/auth/login.php">Login</a>
                     </li>
                 <?php endif; ?>
             </ul>

@@ -1,5 +1,5 @@
 <?php
-require_once 'includes/db_connect.php';
+require_once '../includes/db_connect.php';
 
 $username_err = $email_err = $password_err = "";
 $success_msg = "";
@@ -62,7 +62,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
 }
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="container py-5">
@@ -114,4 +114,4 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>
