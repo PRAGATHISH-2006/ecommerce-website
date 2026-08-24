@@ -42,7 +42,9 @@ CREATE TABLE IF NOT EXISTS addresses (
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    icon VARCHAR(50) -- e.g., 'bi-laptop', 'bi-phone'
+    icon VARCHAR(50),
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Products Table
@@ -51,11 +53,52 @@ CREATE TABLE IF NOT EXISTS products (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
+    discount_price DECIMAL(10, 2) DEFAULT NULL,
+    brand VARCHAR(100) DEFAULT NULL,
+    sku VARCHAR(100) UNIQUE DEFAULT NULL,
     stock INT NOT NULL DEFAULT 0,
     category_id INT,
     image VARCHAR(255),
+    specifications TEXT DEFAULT NULL,
+    status ENUM('active', 'inactive') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+);
+
+-- Product Images Table
+CREATE TABLE IF NOT EXISTS product_images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    is_primary BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Product Variants Table
+CREATE TABLE IF NOT EXISTS product_variants (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    size VARCHAR(50) DEFAULT NULL,
+    color VARCHAR(50) DEFAULT NULL,
+    storage VARCHAR(50) DEFAULT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    stock INT NOT NULL DEFAULT 0,
+    sku VARCHAR(100) UNIQUE,
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Inventory History Table
+CREATE TABLE IF NOT EXISTS inventory_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT DEFAULT NULL,
+    variant_id INT DEFAULT NULL,
+    quantity_change INT NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE CASCADE
 );
 
 -- Orders Table
